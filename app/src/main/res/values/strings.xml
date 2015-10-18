@@ -1,0 +1,145 @@
+<resources>
+    <string name="app_name">SmartCycleDemo</string>
+
+    <string name="confirm">确认</string>
+    <string name="home">返回</string>
+    <string name="cancel">取消</string>
+    <string name="refresh">刷新</string>
+    <string name="start">开始</string>
+    <string name="stop">停止</string>
+    <string name="pause">暂停</string>
+    <string name="times">次</string>
+    <string name="hours">小时</string>
+    <string name="calorie">卡路里</string>
+    <string name="days">天</string>
+
+    <!-- string for login and register-->
+    <string name="username">用户名</string>
+    <string name="account">手机号/邮箱</string>
+    <string name="password">密码</string>
+    <string name="password_helper">请输入8位以上由数字和字母组成的密码</string>
+    <string name="password_filter">0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
+    <string name="register">注册</string>
+    <string name="login">登陆</string>
+    <string name="forget">忘记密码</string>
+    <string name="login_others">其他方式登陆</string>
+    <string name="newer">新成员？请注册</string>
+    <string name="account_not_exist">不存在该用户，请重试</string>
+    <string name="password_incorrect">用户名或密码错误，请重试</string>
+    <string name="user_account">手机号/邮箱</string>
+    <string name="user_nickname">昵称</string>
+    <string name="password_again">重复密码</string>
+    <string name="user_age">出生日期</string>
+    <string name="user_gender">性别</string>
+    <string name="user_height">身高（cm）</string>
+    <string name="user_weight">体重（kg）</string>
+    <string name="user_level">日常运动模式</string>
+    <string name="user_level_hint">请选择运动模式</string>
+    <string name="nickname_helper">请输入4~12个中文或英文字符</string>
+    <string name="account_error">请输入正确的邮箱或手机号码</string>
+    <string name="account_duplicated">该手机号或邮箱已被注册</string>
+    <string name="nickname_error">字符数超过限制，请输入4~12个中文或英文字符</string>
+    <string name="password_error">为了您的用户安全，请输入8位以上由数字和字母组成的密码</string>
+    <string name="repeat_error">和上面的密码不匹配，请重试</string>
+    <string name="next_step">下一步</string>
+    <string name="previous_step">上一步</string>
+    <string name="info_fill_title">个性化数据</string>
+    <string name="info_fill_hint">为了完善您的健康数据，请填写以下信息</string>
+    <string name="select_birthday">请选择您的出生日期</string>
+    <string name="height_error">身高不符合标准，请重试（120cm~240cm）</string>
+    <string name="weight_error">体重不符合标准，请重试（30kg~200kg）</string>
+    <string name="finish_register">完成注册</string>
+    <string-array name="user_level_name">
+        <item>最初级</item>
+        <item>初级</item>
+        <item>中级</item>
+        <item>高级</item>
+        <item>最高级</item>
+    </string-array>
+    <string-array name="user_level_content">
+        <item>静坐少动/无日常体力活动或运动/体适能很差者</item>
+        <item>体力活动极少/无运动/体适能差或较差者</item>
+        <item>偶尔体力活动/无或未达到规律运动/体适能差或较差者</item>
+        <item>日常体力活动/规律的中等强度到较大强度运动者</item>
+        <item>大量的日常体力活动/规律的较大强度运动</item>
+    </string-array>
+
+    <!-- String for drawer -->
+    <string name="fixed_exercise">运动课程</string>
+    <string name="dynamic_exercise">智能运动</string>
+    <string name="exercise_circle">运动圈</string>
+    <string name="health_data">健康数据</string>
+    <string name="health_mall">健康商城</string>
+    <string name="change_theme">切换主题</string>
+    <string name="my_message">消息</string>
+    <string name="my_settings">登出</string>
+    <string name="open_drawer">开启</string>
+    <string name="close_drawer">关闭</string>
+
+
+    <!-- String for course fragment-->
+    <string name="minutes">分钟</string>
+    <string-array name="exercise_titles">
+        <item>一分钟快速热身</item>
+        <item>零基础适应性训练</item>
+        <item>高强度间歇计划</item>
+        <item>4分钟减脂计划</item>
+        <item>塑型计划</item>
+        <item>健美身材增肌计划</item>
+        <item>训练1</item>
+        <item>训练2</item>
+    </string-array>
+    <string-array name="exercise_intros">
+        <item>通过一分钟的练习快速进入状态</item>
+        <item>新手适应性练习，从经典动作开始，让你迅速融入健身。</item>
+        <item>高强度间歇训练，效果远超有氧运动的新型减脂训练。</item>
+        <item>4分钟让你热血沸腾，是目前最高效的燃脂练习，两个动作间只需休息10秒。</item>
+        <item>让你的肌肉紧实，匀称。</item>
+        <item>经典力量训练，让你拥有更强的下肢力量。</item>
+        <item>说明1</item>
+        <item>说明2</item>
+    </string-array>
+    <string name="courses">定制课程</string>
+    <string name="finish_training">完成训练</string>
+    <string name="continue_days">连续训练</string>
+    <string name="total_calorie">累计消耗</string>
+    <string name="training_time">训练总耗时</string>
+
+
+    <!-- string for cycling activity-->
+    <string name="current_rate">当前心率(bpm)</string>
+    <string name="bluetooth_dialog_title">搜索附近的Smart Cycle</string>
+    <string name="bluetooth_not_support">您的设备不支持蓝牙，请更换设备</string>
+    <string name="bluetooth_initial_failed">设备初始化失败，请检查蓝牙连接状况</string>
+    <string name="ble_not_supported">您的设备不支持低功耗蓝牙设备，请更换设备</string>
+    <string name="bluetooth_not_found">未找到匹配设备，请重试</string>
+    <string name="unknown_device">未知设备</string>
+
+    <!-- string for cycling interface-->
+    <string name="state_disconnected">请点击蓝牙按钮匹配单车</string>
+    <string name="state_not_started">请点击开始并手握车把</string>
+    <string name="state_retrieving_data">正在获取数据，请手握车把</string>
+    <string name="state_keep">节奏不错，请继续保持</string>
+    <string name="state_accelerate">请加速骑行</string>
+    <string name="state_slow">请减速</string>
+    <string name="state_finish">训练结束</string>
+    <string name="cycling">正在运动</string>
+    <string name="cycling_part1">热身区</string>
+    <string name="cycling_part2">燃脂区</string>
+    <string name="cycling_part3">无氧区</string>
+    <string name="cycling_part4">恢复区</string>
+    <string name="timer">时间</string>
+    <string name="target">目标心率</string>
+
+    <!-- string for cycling dialog-->
+    <string name="finish">完成</string>
+    <string name="share">分享</string>
+    <string name="finish_message">恭喜您，训练完成！</string>
+    <string name="exit_message">训练未完成，确认退出？</string>
+
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_test">TestActivity</string>
+
+</resources>

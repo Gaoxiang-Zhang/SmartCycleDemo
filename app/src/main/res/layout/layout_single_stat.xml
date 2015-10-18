@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="总训练时长"
+        android:textColor="@color/white"
+        android:paddingTop="14dp"
+        android:paddingStart="14dp"/>
+
+    <TextView
+        android:id="@+id/value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="123456"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:padding="4dp"
+        android:textSize="24sp"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/unit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="分钟"
+        android:textColor="@color/white"
+        android:gravity="end"
+        android:paddingBottom="10dp"
+        android:paddingEnd="14dp"/>
+
+
+</LinearLayout>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/item_top"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/fixed_exercise"
+            android:checked="true"
+            android:icon="@mipmap/running"
+            android:title="@string/fixed_exercise"/>
+        <item
+            android:id="@+id/dynamic_exercise"
+            android:checked="false"
+            android:icon="@mipmap/running"
+            android:title="@string/dynamic_exercise"/>
+        <item
+            android:id="@+id/exercise_circle"
+            android:checked="false"
+            android:icon="@mipmap/globe"
+            android:title="@string/exercise_circle"/>
+        <item
+            android:id="@+id/health_data"
+            android:checked="false"
+            android:icon="@mipmap/data"
+            android:title="@string/health_data"/>
+        <item
+            android:id="@+id/health_mall"
+            android:checked="false"
+            android:icon="@mipmap/mall"
+            android:title="@string/health_mall"/>
+     </group>
+    <group
+        android:id="@+id/item_bottom"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/change_theme"
+            android:checked="false"
+            android:checkable="false"
+            android:icon="@mipmap/color"
+            android:title="@string/change_theme"/>
+        <item
+            android:id="@+id/my_message"
+            android:checked="false"
+            android:checkable="false"
+            android:icon="@mipmap/message"
+            android:title="@string/my_message"/>
+        <item
+            android:id="@+id/my_settings"
+            android:checked="false"
+            android:checkable="false"
+            android:icon="@mipmap/settings"
+            android:title="@string/my_settings"/>
+    </group>
+
+</menu>

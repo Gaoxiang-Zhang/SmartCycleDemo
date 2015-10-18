@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_dark">#e64a19</color>
+    <color name="primary">#ff5722</color>
+    <color name="primary_light">#ffccbc</color>
+    <color name="text">#ffffff</color>
+    <color name="accent">#009688</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#727272</color>
+    <color name="trans_secondary_text">#7f727272</color>
+    <color name="divider">#b6b6b6</color>
+    <color name="trans_primary">#7fe64a19</color>
+
+    <color name="background">#fff3f3f3</color>
+
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+
+    <color name="light_blue_primary">#03a9f4</color>
+    <color name="blue_primary">#2196f3</color>
+    <color name="blue_primary_dark">#1976d2</color>
+    <color name="blue_primary_light">#bbdefb</color>
+    <color name="red_primary">#f44336</color>
+    <color name="red_primary_dark">#d32f2f</color>
+    <color name="red_primary_light">#ffcdd2</color>
+    <color name="green_primary">#4caf50</color>
+    <color name="green_primary_dark">#388e3c</color>
+    <color name="green_primary_light">#c8e6c9</color>
+    <color name="yellow_primary">#ffc107</color>
+    <color name="yellow_primary_dark">#ffa000</color>
+    <color name="yellow_primary_light">#fff9c4</color>
+
+    <color name="black_overlay">#66000000</color>
+</resources>
