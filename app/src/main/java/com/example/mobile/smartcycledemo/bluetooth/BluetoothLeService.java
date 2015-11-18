@@ -132,7 +132,7 @@ public class BluetoothLeService extends Service {
             Log.d(DEBUG_TAG, "connect bluetooth adapter failed");
             return false;
         }
-        // previously connected to device. Try to reconnect
+        /* previously connected to device. Try to reconnect
         if(bluetoothDeviceAddress != null && address.equals(bluetoothDeviceAddress) && bluetoothGatt != null){
             Log.d(DEBUG_TAG, "trying to use an existing gatt for connection.");
             if(bluetoothGatt.connect()){
@@ -143,7 +143,7 @@ public class BluetoothLeService extends Service {
                 Log.d(DEBUG_TAG, "connect gatt failed");
                 return false;
             }
-        }
+        }*/
 
         final BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
         if(device == null){
@@ -163,6 +163,7 @@ public class BluetoothLeService extends Service {
         if(bluetoothAdapter == null || bluetoothGatt == null){
             return;
         }
+        Log.d(DEBUG_TAG, "disconnect() called");
         bluetoothGatt.disconnect();
     }
 
@@ -176,6 +177,7 @@ public class BluetoothLeService extends Service {
         disconnect();
         bluetoothGatt.close();
         bluetoothGatt = null;
+        Log.d(DEBUG_TAG, "close() called");
     }
 
     /**
