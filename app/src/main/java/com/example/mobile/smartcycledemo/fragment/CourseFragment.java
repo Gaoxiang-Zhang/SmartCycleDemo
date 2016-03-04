@@ -155,8 +155,8 @@ public class CourseFragment extends Fragment {
         }
 
         // the first data is for test
-        courses.add(new TitleIntroTime(titles[0], intros[0], 1));
-        times[0].time1 = times[0].time2 = times[0].time3 = times[0].time4 = 15;
+        courses.add(new TitleIntroTime(titles[0], intros[0], 4));
+        times[0].time1 = times[0].time2 = times[0].time3 = times[0].time4 = 60;
         // for the rest of data, randomly generate the
         for(int i = 1; i < titles.length; i++){
             // time 1 ~ time 4 are for different period of cycling, and the unit is second

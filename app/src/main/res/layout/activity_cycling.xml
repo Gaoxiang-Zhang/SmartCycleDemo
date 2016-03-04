@@ -82,7 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/state_not_started"
-                android:textSize="28sp"
+                android:textSize="26sp"
                 android:textColor="@color/primary"
                 android:layout_gravity="center"
                 android:padding="8dp"/>
@@ -91,10 +91,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="5dp"
                 android:visibility="invisible"
-                custom:pv_autostart="true"
+                custom:pv_autostart="false"
                 custom:pv_circular="false"
                 custom:pv_progressStyle="@style/Material.Drawable.LinearProgress"
-                custom:pv_progressMode="indeterminate"/>
+                custom:pv_progressMode="determinate"/>
         </LinearLayout>
     </android.support.v7.widget.CardView>
 

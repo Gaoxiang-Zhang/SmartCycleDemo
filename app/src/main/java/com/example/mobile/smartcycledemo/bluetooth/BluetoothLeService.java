@@ -25,9 +25,12 @@ public class BluetoothLeService extends Service {
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothGatt bluetoothGatt;
+    private String bluetoothAddress;
+    private int mConnectionState = STATE_DISCONNECTED;
 
-    // address of device to be connected
-    private String bluetoothDeviceAddress;
+    private static final int STATE_DISCONNECTED = 0;
+    private static final int STATE_CONNECTING = 1;
+    private static final int STATE_CONNECTED = 2;
 
     // the tag for debug
     private String DEBUG_TAG = "debug_tag";
@@ -55,14 +58,17 @@ public class BluetoothLeService extends Service {
             String intentAction;
             if(newState == BluetoothProfile.STATE_CONNECTED){
                 intentAction = ACTION_GATT_CONNECTED;
+                mConnectionState = STATE_CONNECTED;
                 broadcastUpdate(intentAction, null);
-                Log.d(DEBUG_TAG, "Connected t GATT Server");
+                Log.d(DEBUG_TAG, "Connected to GATT Server");
                 Log.d(DEBUG_TAG, "Attempting to start service discovery: " + bluetoothGatt.discoverServices());
             }
             else if(newState == BluetoothProfile.STATE_DISCONNECTED){
                 intentAction = ACTION_GATT_DISCONNECTED;
+                mConnectionState = STATE_DISCONNECTED;
                 broadcastUpdate(intentAction, null);
-                Log.d(DEBUG_TAG, "Disconnected to GATT Server");
+                bluetoothGatt.close();
+                Log.d(DEBUG_TAG, "Disconnected to GATT Server with status: " + status);
             }
         }
 
@@ -75,6 +81,9 @@ public class BluetoothLeService extends Service {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if(status == BluetoothGatt.GATT_SUCCESS){
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED, null);
+            }
+            else{
+                Log.d(DEBUG_TAG, "onServiceDiscovered received:"+status);
             }
         }
 
@@ -92,7 +101,7 @@ public class BluetoothLeService extends Service {
     private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic){
         final Intent intent = new Intent(action);
         if(characteristic == null){
-            sendBroadcast(intent);
+            this.sendBroadcast(intent);
             return;
         }
         Log.d(DEBUG_TAG,characteristic.getStringValue(0));
@@ -100,7 +109,7 @@ public class BluetoothLeService extends Service {
         if(HEART_BEAT_UUID.equals(characteristic.getUuid())){
             String value = characteristic.getStringValue(0);
             intent.putExtra(EXTRA_DATA, value);
-            sendBroadcast(intent);
+            this.sendBroadcast(intent);
         }
 
     }
@@ -132,27 +141,30 @@ public class BluetoothLeService extends Service {
             Log.d(DEBUG_TAG, "connect bluetooth adapter failed");
             return false;
         }
-        /* previously connected to device. Try to reconnect
-        if(bluetoothDeviceAddress != null && address.equals(bluetoothDeviceAddress) && bluetoothGatt != null){
-            Log.d(DEBUG_TAG, "trying to use an existing gatt for connection.");
-            if(bluetoothGatt.connect()){
-                Log.d(DEBUG_TAG,"connecting gatt");
-                return true;
-            }
-            else{
-                Log.d(DEBUG_TAG, "connect gatt failed");
-                return false;
-            }
-        }*/
 
+        //previously connected to device. Try to reconnect
+//        if(bluetoothAddress != null && address.equals(bluetoothAddress) && bluetoothGatt != null){
+//            Log.d(DEBUG_TAG, "trying to use an existing gatt for connection.");
+//            if(bluetoothGatt.connect()){
+//                Log.d(DEBUG_TAG,"connecting gatt");
+//                mConnectionState = STATE_CONNECTING;
+//                return true;
+//            }
+//            else{
+//                Log.d(DEBUG_TAG, "connect gatt failed");
+//                return false;
+//            }
+//        }
         final BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
-        if(device == null){
+        if(device == null) {
             Log.d(DEBUG_TAG, "connect device failed");
+            return false;
         }
         // setting the autoConnect parameter to false to directly connect to the device
         bluetoothGatt = device.connectGatt(this, false, gattCallback);
         Log.d(DEBUG_TAG, "Trying to create a new connection");
-        bluetoothDeviceAddress = address;
+        bluetoothAddress = address;
+        mConnectionState = STATE_CONNECTING;
         return true;
     }
 
@@ -174,7 +186,6 @@ public class BluetoothLeService extends Service {
         if(bluetoothGatt == null){
             return;
         }
-        disconnect();
         bluetoothGatt.close();
         bluetoothGatt = null;
         Log.d(DEBUG_TAG, "close() called");
@@ -203,8 +214,10 @@ public class BluetoothLeService extends Service {
         // if the characteristic fit the uuid of heart beat channel, enable notification value
         if(HEART_BEAT_UUID.equals(characteristic.getUuid())){
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(GattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            bluetoothGatt.writeDescriptor(descriptor);
+            if(descriptor != null){
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                bluetoothGatt.writeDescriptor(descriptor);
+            }
         }
     }
 

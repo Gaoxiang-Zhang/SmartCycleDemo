@@ -8,16 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,9 +28,7 @@ import com.example.mobile.smartcycledemo.bluetooth.BluetoothLeService;
 import com.example.mobile.smartcycledemo.bluetooth.GattAttributes;
 import com.example.mobile.smartcycledemo.dialog.CyclingExitDialog;
 import com.example.mobile.smartcycledemo.dialog.CyclingFinishDialog;
-import com.example.mobile.smartcycledemo.utils.CommonFunction;
 import com.example.mobile.smartcycledemo.utils.GlobalType;
-import com.example.mobile.smartcycledemo.utils.MyDatabase;
 import com.example.mobile.smartcycledemo.view.DonutChart;
 import com.example.mobile.smartcycledemo.view.RateMeter;
 import com.rey.material.widget.ProgressView;
@@ -78,6 +73,20 @@ public class CyclingActivity extends AppCompatActivity implements CyclingExitDia
     MyTimerTask timerTask;
     Handler handler;
 
+    // timer, timer task and handler to handle the progress indicator
+    Timer progressTimer;
+    TimerTask progressTask;
+    Handler progressHandler;
+    int progressTime = 0;
+    boolean isReadingValue = false;
+
+    // timer, timer task and handler to handle the missing values
+    Timer timeoutTimer;
+    TimerTask timeoutTask;
+    Handler timeoutHandler;
+    int timeoutTime = 0;
+
+
     // receiver to receive finish broadcast
     BroadcastReceiver finishReceiver;
 
@@ -96,6 +105,23 @@ public class CyclingActivity extends AppCompatActivity implements CyclingExitDia
     private boolean isConnected;
     // if the receiver has been registered
     private boolean isRegistered;
+
+    // values for short time intervals
+    //double savedRate = 0;
+    int errorTimes = 0;
+
+    // windows for smoothing the data
+    double[] savedValue;
+    int savedIndex = 0;
+
+    // smooth rate for values
+    final double SMOOTH_RATE = 0.1;
+
+    final int TIMEOUT_TIME = 3000;
+
+    final int WINDOWS_SIZE = 5;
+
+    final int WINDOW_LOWER_BOUND = 30, WINDOW_UPPER_BOUND = 200;
 
 
     @Override
@@ -198,6 +224,8 @@ public class CyclingActivity extends AppCompatActivity implements CyclingExitDia
             }
         });
 
+        initProgressView();
+
     }
 
     /**
@@ -253,6 +281,7 @@ public class CyclingActivity extends AppCompatActivity implements CyclingExitDia
                 }
             }
         };
+        savedValue = new double[WINDOWS_SIZE];
     }
 
     // MyTimerTask: task to set the timer
@@ -278,14 +307,17 @@ public class CyclingActivity extends AppCompatActivity implements CyclingExitDia
      * setTargetHeartRate: set the current heart rate by calculating with age and level
      */
     private void setTargetHeartRate(){
+        /** This part is for real data getting from equation
         SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
         int age = CommonFunction.calculateAge(sharedPreferences.getString(MyDatabase.UserProfile.KEY_AGE, ""));
         int level = sharedPreferences.getInt(MyDatabase.UserProfile.KEY_LEVEL, 0);
         double[] heartRate = CommonFunction.calculateHRmax(age, level);
         upperBound = (int)heartRate[1];
         lowerBound = (int)heartRate[0];
+        targetHeartbeats.setText(lowerBound + " ~ " + upperBound);**/
+        lowerBound = 80;
+        upperBound = 100;
         targetHeartbeats.setText(lowerBound + " ~ " + upperBound);
-
         // init rate meter
         rateMeter.setInitValue(lowerBound, upperBound);
     }
@@ -366,15 +398,18 @@ public class CyclingActivity extends AppCompatActivity implements CyclingExitDia
         //noinspection SimplifiableIfStatement
         switch (id){
             case android.R.id.home:
-                finish();
+                CyclingExitDialog exitDialog = new CyclingExitDialog();
+                exitDialog.setCancelable(false);
+                exitDialog.show(getFragmentManager(), "exit_dialog");
                 break;
             case BAR_BLUETOOTH_ID:
                 if(isConnected){
                     bluetoothLeService.disconnect();
+                    //bluetoothLeService.close();
                 }
                 else{
                     BluetoothDialog dialog = new BluetoothDialog();
-                    dialog.show(getFragmentManager(),"bluetooth_fragment");
+                    dialog.show(getFragmentManager(), "bluetooth_fragment");
                 }
                 break;
             case BAR_ORIENTATION_ID:
@@ -404,10 +439,9 @@ public class CyclingActivity extends AppCompatActivity implements CyclingExitDia
      * parseHeartbeatData: transform the original U1:#num to num
      */
     private int parseHeartbeatData(String data){
-        if(data.length() > 3) {
-            return Integer.parseInt(data.substring(3, data.length() - 2));
-        }
-        else{
+        try {
+            return Integer.parseInt(data.substring(3));
+        } catch (Exception e){
             return 0;
         }
     }
@@ -417,25 +451,200 @@ public class CyclingActivity extends AppCompatActivity implements CyclingExitDia
      */
     private void addNewPoint(String value){
         int result = parseHeartbeatData(value);
-        rateMeter.setCurrentValue(result);
+        Log.d("Hello",result+"");
         String info;
+        // cannot get available value
         if(result < 10){
-            info = getResources().getString(R.string.state_retrieving_data);
-            mProgressView.start();
+            // if it is not starting procedure
+            if(progressTime == 0) {
+                // error times(seconds) increase
+                errorTimes++;
+                // lot of error times
+                if (errorTimes >= 10) {
+                    info = getResources().getString(R.string.state_retrieving_data);
+                    errorTimes = 0;
+                    startProgressView();
+                } else {
+                    // use history value instead
+                    //result = (int)savedRate;
+                    info = heartbeatsInstruction.getText().toString();
+                }
+            } else {
+                info = getResources().getString(R.string.state_retrieving_data);
+            }
         }
         else if(result < lowerBound){
             info = getResources().getString(R.string.state_accelerate);
-            mProgressView.stop();
+            //savedRate = result;
+            errorTimes = 0;
+            finishProgressView();
         }
         else if(result >= lowerBound && result <= upperBound){
             info = getResources().getString(R.string.state_keep);
-            mProgressView.stop();
+            //savedRate = result;
+            errorTimes = 0;
+            progressTime = 0;
+            finishProgressView();
         }
         else{
             info = getResources().getString(R.string.state_slow);
-            mProgressView.stop();
+            //savedRate = result;
+            errorTimes = 0;
+            progressTime = 0;
+            finishProgressView();
         }
+        rateMeter.setCurrentValue(result);
         heartbeatsInstruction.setText(info);
+    }
+
+    private void addNewData(String value){
+        int result = parseHeartbeatData(value);
+        String info;
+        isReadingValue = true;
+        restartTimeoutTask();
+        if(progressTime >= 900 || progressTime == -1){
+            finishProgressView();
+//            if(savedRate != 0 && Math.abs(savedRate-result) / savedRate > SMOOTH_RATE ){
+//                if(savedRate < result){
+//                    result = (int)(savedRate * (1 + SMOOTH_RATE));
+//                }
+//                else{
+//                    result = (int)(savedRate * (1 - SMOOTH_RATE));
+//                }
+//            }
+            savedValue[savedIndex] = result;
+            savedIndex = (savedIndex + 1) % WINDOWS_SIZE;
+            double sum = 0;
+            int count = 0;
+            for(int i = 0; i < WINDOWS_SIZE; i++){
+                if(savedValue[i] >= WINDOW_LOWER_BOUND && savedValue[i] <= WINDOW_UPPER_BOUND){
+                    sum += savedValue[i];
+                    count++;
+                }
+            }
+            if(count == 0){
+                result = 0;
+            }
+            else{
+                result = (int)(sum / count);
+            }
+            // save current value in the window
+
+            if(result < lowerBound){
+                info = getResources().getString(R.string.state_accelerate);
+            }
+            else if(result >= lowerBound && result <= upperBound){
+                info = getResources().getString(R.string.state_keep);
+            }
+            else{
+                info = getResources().getString(R.string.state_slow);
+            }
+        }
+        else{
+            result = 0;
+            info = getResources().getString(R.string.state_retrieving_data);
+        }
+        Log.d("Smooth Heartbeat data: ", result+"");
+        rateMeter.setCurrentValue(result);
+        heartbeatsInstruction.setText(info);
+    }
+
+    private void startTimeoutTask() {
+        timeoutHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                Log.d("Hello", "start timeout task");
+                String info = getResources().getString(R.string.state_retrieving_data);
+                rateMeter.setCurrentValue(0);
+                heartbeatsInstruction.setText(info);
+                isReadingValue = false;
+                finishProgressView();
+                startProgressView();
+            }
+        };
+        timeoutTimer = new Timer(true);
+        timeoutTask = new TimerTask() {
+            @Override
+            public void run() {
+                Message message = new Message();
+                timeoutHandler.sendMessage(message);
+            }
+        };
+        timeoutTimer.schedule(timeoutTask, TIMEOUT_TIME);
+    }
+
+    private void restartTimeoutTask(){
+        finishTimeoutTask();
+        startTimeoutTask();
+    }
+
+    private void finishTimeoutTask(){
+        if(timeoutTimer != null){
+            timeoutTimer.cancel();
+            timeoutTimer.purge();
+        }
+        if(timeoutTask != null){
+            timeoutTask.cancel();
+        }
+        timeoutTimer = null;
+        timeoutTask = null;
+        timeoutTime = 0;
+    }
+
+
+    /**
+     * initProgressView: init the progress handler and progress task
+     */
+    private void initProgressView(){
+        progressHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                mProgressView.setProgress((float)msg.what / 1000);
+                super.handleMessage(msg);
+            }
+        };
+    }
+
+    /**
+     * finishProgressView:
+     */
+    private void finishProgressView(){
+        if(progressTimer != null){
+            progressTimer.cancel();
+            progressTimer.purge();
+        }
+        if(progressTask != null){
+            progressTask.cancel();
+        }
+        progressTimer = null;
+        progressTask = null;
+        progressTime = -1;
+        mProgressView.stop();
+    }
+
+    /**
+     * startProgressView:
+     */
+    private void startProgressView(){
+        progressTime = 0;
+        mProgressView.setProgress(0);
+        mProgressView.start();
+        progressTimer = new Timer(true);
+        progressTask = new TimerTask(){
+            @Override
+            public void run() {
+                Message message = new Message();
+                if(progressTime >= 900){
+                    message.what = 900;
+                    progressHandler.sendMessage(message);
+                }
+                else if(isReadingValue){
+                    message.what = progressTime+=2;
+                    progressHandler.sendMessage(message);
+                }
+            }
+        };
+        progressTimer.schedule(progressTask, 0, 10);
     }
 
     /**
@@ -462,6 +671,7 @@ public class CyclingActivity extends AppCompatActivity implements CyclingExitDia
      */
     public void onFoundComplete(String address){
         if(address != null){
+            heartbeatsInstruction.setText("正在连接，请等待");
             bluetoothLeAddress = address;
             Intent gattIntent = new Intent(this, BluetoothLeService.class);
             // bind service with intent, serviceConnection and parameter
@@ -534,6 +744,8 @@ public class CyclingActivity extends AppCompatActivity implements CyclingExitDia
             final String action = intent.getAction();
             if(BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)){
                 isConnected = true;
+                finishProgressView();
+                startProgressView();
                 changeBluetoothIconState(myMenu, false);
                 heartbeatsInstruction.setText(getResources().getString(R.string.state_retrieving_data));
                 mProgressView.setVisibility(View.VISIBLE);
@@ -550,11 +762,19 @@ public class CyclingActivity extends AppCompatActivity implements CyclingExitDia
             else if(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)){
                 initNotification();
             }
-            else if(BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)){
-                addNewPoint(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+            else if(BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+                addNewData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
             }
         }
     };
+
+    /**
+     * onBackPressed: set empty function to avoid back action when pressing physical back button
+     */
+    @Override
+    public void onBackPressed(){
+
+    }
 
 
     @Override

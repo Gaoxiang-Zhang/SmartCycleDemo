@@ -75,22 +75,6 @@
     </TableLayout>
 
     <TextView
-        android:id="@+id/share"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/message"
-        android:layout_toLeftOf="@+id/finish"
-        android:textColor="@color/primary"
-        android:textSize="16sp"
-        android:text="@string/share"
-        android:background="@drawable/style_list"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:clickable="true" />
-
-    <TextView
         android:id="@+id/finish"
         android:text="@string/finish"
         android:layout_width="wrap_content"

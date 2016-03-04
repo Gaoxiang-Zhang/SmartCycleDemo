@@ -31,15 +31,7 @@ public class CyclingFinishDialog extends DialogFragment {
 
 
         // set the button
-        TextView textView = (TextView)view.findViewById(R.id.share);
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onFinishComplete();
-                getDialog().dismiss();
-            }
-        });
-        textView = (TextView)view.findViewById(R.id.finish);
+        TextView textView = (TextView)view.findViewById(R.id.finish);
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

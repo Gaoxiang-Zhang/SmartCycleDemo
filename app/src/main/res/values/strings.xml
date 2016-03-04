@@ -80,24 +80,14 @@
     <!-- String for course fragment-->
     <string name="minutes">分钟</string>
     <string-array name="exercise_titles">
-        <item>一分钟快速热身</item>
+        <item>4分钟快速热身</item>
         <item>零基础适应性训练</item>
         <item>高强度间歇计划</item>
-        <item>4分钟减脂计划</item>
-        <item>塑型计划</item>
-        <item>健美身材增肌计划</item>
-        <item>训练1</item>
-        <item>训练2</item>
     </string-array>
     <string-array name="exercise_intros">
-        <item>通过一分钟的练习快速进入状态</item>
+        <item>通过4分钟的练习快速进入状态</item>
         <item>新手适应性练习，从经典动作开始，让你迅速融入健身。</item>
         <item>高强度间歇训练，效果远超有氧运动的新型减脂训练。</item>
-        <item>4分钟让你热血沸腾，是目前最高效的燃脂练习，两个动作间只需休息10秒。</item>
-        <item>让你的肌肉紧实，匀称。</item>
-        <item>经典力量训练，让你拥有更强的下肢力量。</item>
-        <item>说明1</item>
-        <item>说明2</item>
     </string-array>
     <string name="courses">定制课程</string>
     <string name="finish_training">完成训练</string>
